@@ -80,7 +80,6 @@ class AppConfig:
 				name='anyrouter',
 				domain='https://anyrouter.top',
 				login_path='/login',
-				sign_in_path='/api/user/checkin',
 				user_info_path='/api/user/self',
 				api_user_key='new-api-user',
 				bypass_method='waf_cookies',
