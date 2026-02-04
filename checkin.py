@@ -20,6 +20,32 @@ from utils.notify import notify
 load_dotenv()
 
 BALANCE_HASH_FILE = 'balance_hash.txt'
+DEBUG_HTTP = os.getenv('DEBUG_HTTP') == '1'
+DEBUG_HTTP_BODY = os.getenv('DEBUG_HTTP_BODY') == '1'
+DEBUG_HTTP_MAX_CHARS = int(os.getenv('DEBUG_HTTP_MAX_CHARS', '800'))
+
+
+def _debug_print_response(prefix: str, url: str, response: httpx.Response):
+	"""打印 HTTP 调试信息（可选输出响应正文片段）"""
+	if not DEBUG_HTTP:
+		return
+
+	content_type = response.headers.get('content-type', '')
+	content_encoding = response.headers.get('content-encoding', '')
+	location = response.headers.get('location', '')
+	print(
+		f'[DEBUG] {prefix}: url={url}, status={response.status_code}, content-type={content_type}, '
+		f'content-encoding={content_encoding}, location={location}'
+	)
+
+	if not DEBUG_HTTP_BODY:
+		return
+
+	try:
+		text = response.content.decode('utf-8', errors='replace').strip().replace('\r\n', '\n')
+		print(f'[DEBUG] {prefix}: body[0:{DEBUG_HTTP_MAX_CHARS}]={text[:DEBUG_HTTP_MAX_CHARS]}')
+	except Exception as e:
+		print(f'[DEBUG] {prefix}: failed to read body: {e}')
 
 
 def load_balance_hash():
@@ -133,6 +159,7 @@ def get_user_info(client, headers, user_info_url: str):
 	"""获取用户信息"""
 	try:
 		response = client.get(user_info_url, headers=headers, timeout=30)
+		_debug_print_response('user_info', user_info_url, response)
 
 		if response.status_code == 200:
 			data = response.json()
@@ -176,6 +203,7 @@ def execute_check_in(client, account_name: str, provider_config, headers: dict):
 
 	sign_in_url = f'{provider_config.domain}{provider_config.sign_in_path}'
 	response = client.post(sign_in_url, headers=checkin_headers, timeout=30)
+	_debug_print_response('sign_in', sign_in_url, response)
 
 	print(f'[RESPONSE] {account_name}: Response status code {response.status_code}')
 

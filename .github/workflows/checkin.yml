@@ -11,8 +11,9 @@ jobs:
     environment: production
     env:
       PYTHONIOENCODING: utf-8
-      # 仅打印安全调试日志（步骤/状态码/响应头），不输出响应正文
+      # 调试日志：默认包含响应正文片段，方便排查接口返回（注意敏感信息风险）
       DEBUG_HTTP: '1'
+      # 如需关闭响应正文片段，可设为 '0'
       DEBUG_HTTP_BODY: '0'
     steps:
     - uses: actions/checkout@v4
