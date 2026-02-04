@@ -1,7 +1,8 @@
 name: AnyRouter 自动签到
 on:
   schedule:
-    - cron: '0 */6 * * *'
+    # GitHub Actions 的 cron 使用 UTC；北京时间 08:00 = UTC 00:00
+    - cron: '0 0 * * *'
   workflow_dispatch:
 
 jobs:
@@ -10,6 +11,9 @@ jobs:
     environment: production
     env:
       PYTHONIOENCODING: utf-8
+      # 仅打印安全调试日志（步骤/状态码/响应头），不输出响应正文
+      DEBUG_HTTP: '1'
+      DEBUG_HTTP_BODY: '0'
     steps:
     - uses: actions/checkout@v4
 
