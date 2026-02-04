@@ -50,7 +50,7 @@ class ProviderConfig:
 			name=name,
 			domain=data['domain'],
 			login_path=data.get('login_path', '/login'),
-			sign_in_path=data.get('sign_in_path', '/api/user/checkin'),
+			sign_in_path=data.get('sign_in_path'),
 			user_info_path=data.get('user_info_path', '/api/user/self'),
 			api_user_key=data.get('api_user_key', 'new-api-user'),
 			bypass_method=data.get('bypass_method'),
@@ -63,7 +63,7 @@ class ProviderConfig:
 
 	def needs_manual_check_in(self) -> bool:
 		"""判断是否需要手动调用签到接口"""
-		return self.bypass_method == 'waf_cookies'
+		return bool(self.sign_in_path)
 
 
 @dataclass
@@ -80,7 +80,7 @@ class AppConfig:
 				name='anyrouter',
 				domain='https://anyrouter.top',
 				login_path='/login',
-				sign_in_path='/api/user/sign_in',
+				sign_in_path='/api/user/checkin',
 				user_info_path='/api/user/self',
 				api_user_key='new-api-user',
 				bypass_method='waf_cookies',
